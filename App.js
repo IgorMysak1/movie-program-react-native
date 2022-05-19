@@ -1,20 +1,59 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from "react";
+import { createStackNavigator } from "@react-navigation/stack";
+import {
+  NavigationContainer,
+  useNavigationContainerRef,
+} from "@react-navigation/native";
+import { Header } from "./src/components/Header";
+import { ChooseDate } from "./src/components/ChooseDate";
+import { Movies } from "./src/components/Movies";
+
+const Stack = createStackNavigator();
 
 export default function App() {
+  const [date, setDate] = useState(new Date());
+  const navigationRef = useNavigationContainerRef();
+  const goBack = () => navigationRef.current;
+  const config = {
+    animation: "spring",
+    config: {
+      stiffness: 100000,
+      damping: 500,
+      mass: 3,
+      overshootClamping: true,
+      restDisplacementThreshold: 0.01,
+      restSpeedThreshold: 0.01,
+    },
+  };
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer ref={navigationRef}>
+      <Header goBack={goBack} />
+      <Stack.Navigator>
+        <Stack.Screen
+          name="ChooseDate"
+          options={{
+            headerShown: false,
+            transitionSpec: {
+              open: config,
+              close: config,
+            },
+          }}
+        >
+          {() => <ChooseDate date={date} setDate={setDate} />}
+        </Stack.Screen>
+        <Stack.Screen
+          name="Movies"
+          options={{
+            headerShown: false,
+            transitionSpec: {
+              open: config,
+              close: config,
+            },
+          }}
+        >
+          {() => <Movies date={date} />}
+        </Stack.Screen>
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
